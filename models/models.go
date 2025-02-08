@@ -22,16 +22,16 @@ type Warehouse struct {
 }
 
 type Product struct {
-	Id          int       `json:"_id" db:"id"`
-	Name        string    `json:"name" binding:"required" db:"name"`
-	Quantity    int       `json:"quantity" binding:"required" db:"quantity"`
-	Price       float64   `json:"price" binding:"required" db:"price"`
-	Category    string    `json:"category" binding:"required" db:"category"`
-	Description string    `json:"description" binding:"required" db:"description"`
-	Image       string    `json:"image" binding:"required" db:"image"`
-	UserId      int       `json:"user_id" db:"user_id"`
-	WarehouseId string    `json:"warehouse_id" db:"warehouse_id"`
-	CreatedAt   time.Time `json:"-" db:"created_at"`
+	Id          int         `json:"_id" db:"id"`
+	Name        string      `json:"name" binding:"required" db:"name"`
+	Quantity    int         `json:"quantity" binding:"required" db:"quantity"`
+	Price       float64     `json:"price" binding:"required" db:"price"`
+	Category    string      `json:"category" binding:"required" db:"category"`
+	Description string      `json:"description" binding:"required" db:"description"`
+	Image       string      `json:"image" binding:"required" db:"image"`
+	UserId      int         `json:"user_id" db:"user_id"`
+	WarehouseId WarehouseId `json:"warehouse_id" db:"warehouse_id"`
+	CreatedAt   time.Time   `json:"-" db:"created_at"`
 }
 
 type UpdateWarehouseInput struct {

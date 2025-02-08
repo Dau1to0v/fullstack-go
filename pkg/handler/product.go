@@ -21,15 +21,9 @@ func (h *Handler) createProduct(c *gin.Context) {
 		return
 	}
 
-	warehouseId, err := strconv.Atoi(input.WarehouseId)
-	if err != nil {
-		log.Printf("Ошибка конвертации warehouse_id: %v", err)
-		newErrorResponse(c, http.StatusBadRequest, "invalid warehouse id")
-		return
-	}
+	log.Printf("Создание продукта: %+v", input)
 
-	log.Printf("Creating product: %+v", input)
-	id, err := h.services.Product.Create(userId, warehouseId, input)
+	id, err := h.services.Product.Create(userId, int(input.WarehouseId), input) // 🔥 Автоматическая конверсия
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -44,12 +38,12 @@ func (h *Handler) createProduct(c *gin.Context) {
 		UserId:      userId,
 		Description: input.Description,
 		Image:       input.Image,
-		WarehouseId: strconv.Itoa(warehouseId),
+		WarehouseId: input.WarehouseId, // 🔥 Автоматическая конверсия обратно в строку
 	}
 
 	c.JSON(http.StatusCreated, map[string]interface{}{
-		"message":   "success",
-		"warehouse": createdProduct,
+		"message": "success",
+		"product": createdProduct,
 	})
 }
 
