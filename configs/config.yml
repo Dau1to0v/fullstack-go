@@ -1,0 +1,8 @@
+port: "8000"
+
+db:
+  username: "fullstack_user"
+  host: "localhost"
+  port: "5436"
+  dbname: "fullstack_db"
+  sslmode: "disable"
