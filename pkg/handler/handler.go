@@ -35,6 +35,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			auth.POST("/register", h.signUp)
 			auth.POST("/login", h.signIn)
+			auth.GET("/getMe", h.userIdentity, h.getMe)
 		}
 
 		protected := api.Group("/", h.userIdentity)

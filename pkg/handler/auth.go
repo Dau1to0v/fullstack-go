@@ -57,3 +57,19 @@ func (h *Handler) signIn(c *gin.Context) {
 		"token": token,
 	})
 }
+
+func (h *Handler) getMe(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, "user not authorized")
+		return
+	}
+
+	user, err := h.services.Authorization.GetById(userId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "could not retrieve user data")
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}

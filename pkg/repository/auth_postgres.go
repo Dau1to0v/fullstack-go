@@ -34,3 +34,15 @@ func (r *AuthPostgres) GetUser(username, password string) (models.User, error) {
 
 	return user, err
 }
+
+func (r *AuthPostgres) GetUserById(userId int) (models.User, error) {
+	var user models.User
+	query := "SELECT id, username, email FROM users WHERE id = $1"
+
+	err := r.db.Get(&user, query, userId)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
