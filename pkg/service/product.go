@@ -40,3 +40,10 @@ func (s *ProductService) Delete(userId, productId int) error {
 func (s *ProductService) GetById(userId, productId int) (models.Product, error) {
 	return s.repo.GetById(userId, productId)
 }
+
+func (s *ProductService) Update(userId, productId int, input models.UpdateProductInput) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+	return s.repo.Update(userId, productId, input)
+}

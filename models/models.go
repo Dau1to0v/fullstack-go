@@ -47,3 +47,20 @@ func (i UpdateWarehouseInput) Validate() error {
 
 	return nil
 }
+
+type UpdateProductInput struct {
+	Name        *string  `json:"name" db:"name"`
+	Quantity    *int     `json:"quantity" db:"quantity"`
+	Price       *float64 `json:"price" db:"price"`
+	Category    *string  `json:"category" db:"category"`
+	Description *string  `json:"description" db:"description"`
+	Image       *string  `json:"image" db:"image"`
+}
+
+func (i UpdateProductInput) Validate() error {
+	if i.Name == nil && i.Quantity == nil && i.Price == nil && i.Category == nil && i.Description == nil && i.Image == nil {
+		return errors.New("update structures has no values")
+	}
+
+	return nil
+}

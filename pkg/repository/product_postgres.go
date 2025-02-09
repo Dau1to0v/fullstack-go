@@ -3,9 +3,11 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/Dau1to0v/fullstack-go/models"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
+	"strings"
 )
 
 type ProductPostgres struct {
@@ -79,4 +81,74 @@ func (r *ProductPostgres) Delete(userId, productId int) error {
 	}
 
 	return nil
+}
+
+func (r *ProductPostgres) Update(userId, productId int, input models.UpdateProductInput) error {
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if input.Name != nil {
+		setValues = append(setValues, fmt.Sprintf("name = $%d", argId))
+		args = append(args, *input.Name)
+		argId++
+	}
+
+	if input.Quantity != nil {
+		setValues = append(setValues, fmt.Sprintf("quantity = $%d", argId))
+		args = append(args, *input.Quantity)
+		argId++
+	}
+
+	if input.Price != nil {
+		setValues = append(setValues, fmt.Sprintf("price = $%d", argId))
+		args = append(args, *input.Price)
+		argId++
+	}
+
+	if input.Category != nil {
+		setValues = append(setValues, fmt.Sprintf("category = $%d", argId))
+		args = append(args, *input.Category)
+		argId++
+	}
+
+	if input.Description != nil {
+		setValues = append(setValues, fmt.Sprintf("description = $%d", argId))
+		args = append(args, *input.Description)
+		argId++
+	}
+
+	if input.Image != nil {
+		setValues = append(setValues, fmt.Sprintf("image = $%d", argId))
+		args = append(args, *input.Image)
+		argId++
+	}
+
+	if len(setValues) == 0 {
+		return errors.New("empty update fields")
+	}
+
+	setQuery := strings.Join(setValues, ", ")
+	query := fmt.Sprintf("UPDATE products SET %s WHERE id = $%d AND user_id = $%d", setQuery, argId, argId+1)
+	args = append(args, productId, userId) // ✅ Добавляем warehouseId и userId в аргументы
+
+	logrus.Debugf("updateQuery: %s", query)
+	logrus.Debugf("args: %v", args) // ✅ Исправлено, теперь правильно печатает аргументы
+
+	result, err := r.db.Exec(query, args...)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("product not found or access denied")
+	}
+
+	return nil
+
 }

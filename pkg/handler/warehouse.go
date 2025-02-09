@@ -77,7 +77,7 @@ func (h *Handler) updateWarehouse(c *gin.Context) {
 	}
 
 	// Выполняем обновление
-	if err := h.services.Update(userId, warehouseId, input); err != nil {
+	if err = h.services.Warehouse.Update(userId, warehouseId, input); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}

@@ -107,10 +107,10 @@ func (r *WarehousePostgres) Update(userId, warehouseId int, input models.UpdateW
 	setQuery := strings.Join(setValues, ", ")
 
 	query := fmt.Sprintf("UPDATE warehouses SET %s WHERE id = $%d AND user_id = $%d", setQuery, argId, argId+1)
-	args = append(args, warehouseId, userId) // ✅ Добавляем warehouseId и userId в аргументы
+	args = append(args, warehouseId, userId)
 
 	logrus.Debugf("updateQuery: %s", query)
-	logrus.Debugf("args: %v", args) // ✅ Исправлено, теперь правильно печатает аргументы
+	logrus.Debugf("args: %v", args)
 
 	_, err := r.db.Exec(query, args...)
 	return err

@@ -24,6 +24,7 @@ type Product interface {
 	GetAll(userId, warehouseId int) ([]models.Product, error)
 	GetById(userId, productId int) (models.Product, error)
 	Delete(userId, productId int) error
+	Update(userId, productId int, input models.UpdateProductInput) error
 }
 type Service struct {
 	Authorization

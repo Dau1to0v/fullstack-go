@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Dau1to0v/fullstack-go/models"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"log"
 	"net/http"
 	"strconv"
@@ -93,7 +94,44 @@ func (h *Handler) getProductById(c *gin.Context) {
 
 }
 
-func (h *Handler) updateProduct(c *gin.Context) {}
+func (h *Handler) updateProduct(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, "user not authorized")
+		return
+	}
+
+	productId, err := strconv.Atoi(c.Param("product_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid product id")
+		return
+	}
+
+	var input models.UpdateProductInput
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// Выполняем обновление
+	if err = h.services.Product.Update(userId, productId, input); err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	logrus.Debugf("Fetching updated product for userId=%d, productId=%d", userId, productId)
+
+	updatedProduct, err := h.services.Product.GetById(userId, productId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "could not retrieve updated product")
+		return
+	}
+
+	c.JSON(http.StatusCreated, map[string]interface{}{
+		"message":   "success",
+		"warehouse": updatedProduct,
+	})
+}
 
 func (h *Handler) deleteProduct(c *gin.Context) {
 	userId, err := getUserId(c)
