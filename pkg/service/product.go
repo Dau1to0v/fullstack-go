@@ -26,3 +26,7 @@ func (s *ProductService) Create(userId, warehouseId int, product models.Product)
 func (s *ProductService) GetAll(userId, warehouseId int) ([]models.Product, error) {
 	return s.repo.GetAll(userId, warehouseId)
 }
+
+func (s *ProductService) Delete(userId, productId int) error {
+	return s.repo.Delete(userId, productId)
+}

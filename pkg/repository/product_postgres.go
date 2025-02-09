@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"github.com/Dau1to0v/fullstack-go/models"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
@@ -41,4 +42,25 @@ func (r *ProductPostgres) GetAll(userId, warehouseId int) ([]models.Product, err
 	}
 
 	return products, nil
+}
+
+func (r *ProductPostgres) Delete(userId, productId int) error {
+	query := "DELETE FROM products WHERE id = $1 AND user_id = $2"
+
+	result, err := r.db.Exec(query, productId, userId)
+	if err != nil {
+		return err
+	}
+
+	// Проверяем, был ли удалён хотя бы 1 товар
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("product not found or access denied")
+	}
+
+	return nil
 }

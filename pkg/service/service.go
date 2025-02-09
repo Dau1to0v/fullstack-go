@@ -22,6 +22,7 @@ type Warehouse interface {
 type Product interface {
 	Create(userId, warehouseId int, product models.Product) (int, error)
 	GetAll(userId, warehouseId int) ([]models.Product, error)
+	Delete(userId, productId int) error
 }
 type Service struct {
 	Authorization

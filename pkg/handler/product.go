@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/Dau1to0v/fullstack-go/models"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -23,7 +24,7 @@ func (h *Handler) createProduct(c *gin.Context) {
 
 	log.Printf("Создание продукта: %+v", input)
 
-	id, err := h.services.Product.Create(userId, int(input.WarehouseId), input) // 🔥 Автоматическая конверсия
+	id, err := h.services.Product.Create(userId, int(input.WarehouseId), input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -38,7 +39,7 @@ func (h *Handler) createProduct(c *gin.Context) {
 		UserId:      userId,
 		Description: input.Description,
 		Image:       input.Image,
-		WarehouseId: input.WarehouseId, // 🔥 Автоматическая конверсия обратно в строку
+		WarehouseId: input.WarehouseId,
 	}
 
 	c.JSON(http.StatusCreated, map[string]interface{}{
@@ -72,4 +73,28 @@ func (h *Handler) getProductById(c *gin.Context) {}
 
 func (h *Handler) updateProduct(c *gin.Context) {}
 
-func (h *Handler) deleteProduct(c *gin.Context) {}
+func (h *Handler) deleteProduct(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, "user not authorized")
+		return
+	}
+
+	productId, err := strconv.Atoi(c.Param("product_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid product id")
+		return
+	}
+
+	fmt.Println("Удаление товара userID:", userId, "productID:", productId)
+
+	err = h.services.Product.Delete(userId, productId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, statusResponse{
+		Status: "success",
+	})
+}
