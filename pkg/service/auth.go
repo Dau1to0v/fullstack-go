@@ -58,6 +58,14 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 	return token.SignedString([]byte(signingKey))
 }
 
+func (s *AuthService) UpdateUser(userId int, input models.UpdateUserInput) error {
+	if err := input.Validate(); err != nil {
+		return err
+	}
+
+	return s.repo.UpdateUser(userId, input)
+}
+
 func (s *AuthService) ParseToken(accessToken string) (int, error) {
 	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"github.com/Dau1to0v/fullstack-go/models"
 	"github.com/jmoiron/sqlx"
+	"strings"
 )
 
 type AuthPostgres struct {
@@ -45,4 +47,34 @@ func (r *AuthPostgres) GetUserById(userId int) (models.User, error) {
 	}
 
 	return user, nil
+}
+
+func (r *AuthPostgres) UpdateUser(userId int, input models.UpdateUserInput) error {
+	setValues := make([]string, 0)
+	args := make([]interface{}, 0)
+	argId := 1
+
+	if input.Username != nil {
+		setValues = append(setValues, fmt.Sprintf("username = $%d", argId)) // Исправлено имя поля
+		args = append(args, *input.Username)
+		argId++
+	}
+
+	if input.Email != nil {
+		setValues = append(setValues, fmt.Sprintf("email = $%d", argId))
+		args = append(args, *input.Email)
+		argId++
+	}
+
+	if len(setValues) == 0 {
+		return errors.New("empty update fields")
+	}
+
+	setQuery := strings.Join(setValues, ", ")
+	query := fmt.Sprintf("UPDATE users SET %s WHERE id = $%d", setQuery, argId) // Исправлен WHERE
+
+	args = append(args, userId) // Добавляем userId в аргументы
+
+	_, err := r.db.Exec(query, args...)
+	return err
 }

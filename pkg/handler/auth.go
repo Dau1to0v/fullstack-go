@@ -73,3 +73,30 @@ func (h *Handler) getMe(c *gin.Context) {
 
 	c.JSON(http.StatusOK, user)
 }
+
+func (h *Handler) updateUser(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, "user not authorized")
+		return
+	}
+
+	var input models.UpdateUserInput
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Authorization.UpdateUser(userId, input); err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "could not update user")
+		return
+	}
+
+	updatedUser, err := h.services.Authorization.GetById(userId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "could not retrieve updated warehouse")
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedUser)
+}

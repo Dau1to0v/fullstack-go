@@ -64,3 +64,16 @@ func (i UpdateProductInput) Validate() error {
 
 	return nil
 }
+
+type UpdateUserInput struct {
+	Username *string `json:"username" binding:"required"`
+	Email    *string `json:"email" binding:"required,email"`
+}
+
+func (i UpdateUserInput) Validate() error {
+	if i.Username == nil && i.Email == nil {
+		return errors.New("update structures has no values")
+	}
+
+	return nil
+}

@@ -9,6 +9,7 @@ type Authorization interface {
 	CreateUser(user models.User) (int, error)
 	GetUser(username, password string) (models.User, error)
 	GetUserById(id int) (models.User, error)
+	UpdateUser(userId int, input models.UpdateUserInput) error
 }
 
 type Warehouse interface {
