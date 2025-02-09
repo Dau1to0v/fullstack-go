@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/Dau1to0v/fullstack-go/models"
 	"github.com/jmoiron/sqlx"
@@ -42,6 +43,21 @@ func (r *ProductPostgres) GetAll(userId, warehouseId int) ([]models.Product, err
 	}
 
 	return products, nil
+}
+
+func (r *ProductPostgres) GetById(userId, productId int) (models.Product, error) {
+	var product models.Product
+
+	query := "SELECT id, name, quantity, price, category, description, image, user_id, warehouse_id, created_at FROM products WHERE id = $1 AND user_id = $2"
+
+	err := r.db.Get(&product, query, productId, userId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return product, errors.New("product not found or access denied")
+		}
+		return product, err
+	}
+	return product, nil
 }
 
 func (r *ProductPostgres) Delete(userId, productId int) error {

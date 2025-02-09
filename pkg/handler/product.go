@@ -54,7 +54,7 @@ func (h *Handler) getAllProduct(c *gin.Context) {
 		return
 	}
 
-	warehouseId, err := strconv.Atoi(c.Param("id"))
+	warehouseId, err := strconv.Atoi(c.Param("warehouse_id"))
 	if err != nil {
 		newErrorResponse(c, http.StatusBadRequest, "invalid warehouse id")
 		return
@@ -69,7 +69,29 @@ func (h *Handler) getAllProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, products)
 }
 
-func (h *Handler) getProductById(c *gin.Context) {}
+func (h *Handler) getProductById(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, "user not authorized")
+		return
+	}
+
+	productId, err := strconv.Atoi(c.Param("product_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid product id")
+		return
+	}
+
+	var product models.Product
+	product, err = h.services.Product.GetById(userId, productId)
+	if err != nil {
+		newErrorResponse(c, http.StatusNotFound, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, product)
+
+}
 
 func (h *Handler) updateProduct(c *gin.Context) {}
 

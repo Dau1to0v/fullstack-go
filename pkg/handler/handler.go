@@ -51,7 +51,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			product := protected.Group("/product")
 			{
 				product.POST("/create", h.createProduct)
-				product.GET("/getAll/:id", h.getAllProduct)
+				product.GET("/getAll/:warehouse_id", h.getAllProduct)
 				product.GET("/get/:product_id", h.getProductById)
 				product.PUT("/:product_id", h.updateProduct)
 				product.POST("/delete/:product_id", h.deleteProduct)
