@@ -21,7 +21,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Разрешить все источники
+		AllowOrigins:     []string{"http://localhost:4200"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -37,6 +37,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			auth.POST("/login", h.signIn)
 			auth.GET("/getMe", h.userIdentity, h.getMe)
 			auth.POST("/updateUser", h.userIdentity, h.updateUser)
+			auth.POST("/passwordChange", h.userIdentity) // TODO: method passwordChange
+
 		}
 
 		protected := api.Group("/", h.userIdentity)
@@ -46,6 +48,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				warehouse.POST("/create", h.createWarehouse)
 				warehouse.GET("/getAll", h.getAllWarehouse)
 				warehouse.GET("/", h.getWarehouseById)
+				warehouse.GET("/calculate") //TODO: method calculateWarehouse
 				warehouse.POST("/update/:id", h.updateWarehouse)
 				warehouse.POST("/delete/:id", h.deleteWarehouse)
 			}
@@ -55,6 +58,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				product.POST("/create", h.createProduct)
 				product.GET("/getAll/:warehouse_id", h.getAllProduct)
 				product.GET("/get/:product_id", h.getProductById)
+				product.GET("/getExelFile/:warehouse_id") // TODO: method getExelFile
 				product.POST("/update/:product_id", h.updateProduct)
 				product.POST("/delete/:product_id", h.deleteProduct)
 
