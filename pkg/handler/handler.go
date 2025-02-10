@@ -48,7 +48,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				warehouse.POST("/create", h.createWarehouse)
 				warehouse.GET("/getAll", h.getAllWarehouse)
 				warehouse.GET("/", h.getWarehouseById)
-				warehouse.GET("/calculate") //TODO: method calculateWarehouse
+				warehouse.GET("/calculate", h.getWarehousesValue) //TODO: method calculateWarehouse
 				warehouse.POST("/update/:id", h.updateWarehouse)
 				warehouse.POST("/delete/:id", h.deleteWarehouse)
 			}

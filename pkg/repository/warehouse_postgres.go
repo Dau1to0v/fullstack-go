@@ -6,6 +6,7 @@ import (
 	"github.com/Dau1to0v/fullstack-go/models"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
+	"log"
 	"strings"
 )
 
@@ -114,4 +115,25 @@ func (r *WarehousePostgres) Update(userId, warehouseId int, input models.UpdateW
 
 	_, err := r.db.Exec(query, args...)
 	return err
+}
+
+func (r *WarehousePostgres) CalculateWarehousesValue() ([]models.WarehouseNetWorth, error) {
+	var warehouses []models.WarehouseNetWorth
+
+	query := `
+	SELECT 
+		w.name AS warehouse, 
+		COALESCE(SUM(p.price * p.quantity), 0) AS net_worth
+	FROM warehouses w
+	LEFT JOIN products p ON w.id = p.warehouse_id
+	GROUP BY w.name;
+`
+
+	err := r.db.Select(&warehouses, query)
+	if err != nil {
+		log.Printf("Ошибка выполнения SQL запроса: %v", err)
+		return nil, err
+	}
+
+	return warehouses, nil
 }

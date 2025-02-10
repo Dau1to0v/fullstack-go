@@ -130,10 +130,10 @@ func (r *ProductPostgres) Update(userId, productId int, input models.UpdateProdu
 
 	setQuery := strings.Join(setValues, ", ")
 	query := fmt.Sprintf("UPDATE products SET %s WHERE id = $%d AND user_id = $%d", setQuery, argId, argId+1)
-	args = append(args, productId, userId) // ✅ Добавляем warehouseId и userId в аргументы
+	args = append(args, productId, userId)
 
 	logrus.Debugf("updateQuery: %s", query)
-	logrus.Debugf("args: %v", args) // ✅ Исправлено, теперь правильно печатает аргументы
+	logrus.Debugf("args: %v", args)
 
 	result, err := r.db.Exec(query, args...)
 	if err != nil {
@@ -150,5 +150,4 @@ func (r *ProductPostgres) Update(userId, productId int, input models.UpdateProdu
 	}
 
 	return nil
-
 }

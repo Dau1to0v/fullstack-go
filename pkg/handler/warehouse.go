@@ -120,3 +120,13 @@ func (h *Handler) deleteWarehouse(c *gin.Context) {
 		Status: "success",
 	})
 }
+
+func (h *Handler) getWarehousesValue(c *gin.Context) {
+	warehouseValues, err := h.services.Warehouse.CalculateWarehousesValue()
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "could not calculate warehouses value")
+		return
+	}
+
+	c.JSON(http.StatusOK, warehouseValues)
+}

@@ -35,3 +35,7 @@ func (s *WarehouseService) Update(userId, warehouseId int, input models.UpdateWa
 func (s *WarehouseService) GetById(userId, warehouseId int) (models.Warehouse, error) {
 	return s.repo.GetById(userId, warehouseId)
 }
+
+func (s *WarehouseService) CalculateWarehousesValue() ([]models.WarehouseNetWorth, error) {
+	return s.repo.CalculateWarehousesValue()
+}

@@ -77,3 +77,8 @@ func (i UpdateUserInput) Validate() error {
 
 	return nil
 }
+
+type WarehouseNetWorth struct {
+	Warehouse string  `json:"warehouse"`
+	NetWorth  float64 `json:"netWorth" db:"net_worth"`
+}
