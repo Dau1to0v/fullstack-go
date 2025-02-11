@@ -38,7 +38,6 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			auth.GET("/getMe", h.userIdentity, h.getMe)
 			auth.POST("/updateUser", h.userIdentity, h.updateUser)
 			auth.POST("/passwordChange", h.userIdentity) // TODO: method passwordChange
-
 		}
 
 		protected := api.Group("/", h.userIdentity)
@@ -48,7 +47,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				warehouse.POST("/create", h.createWarehouse)
 				warehouse.GET("/getAll", h.getAllWarehouse)
 				warehouse.GET("/", h.getWarehouseById)
-				warehouse.GET("/calculate", h.getWarehousesValue) //TODO: method calculateWarehouse
+				warehouse.GET("/calculate", h.getWarehousesValue)
 				warehouse.POST("/update/:id", h.updateWarehouse)
 				warehouse.POST("/delete/:id", h.deleteWarehouse)
 			}
