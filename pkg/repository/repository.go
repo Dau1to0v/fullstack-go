@@ -18,7 +18,7 @@ type Warehouse interface {
 	GetById(userId, warehouseId int) (models.Warehouse, error)
 	Delete(userId, warehouseId int) error
 	Update(userId int, warehouseId int, input models.UpdateWarehouseInput) error
-	CalculateWarehousesValue() ([]models.WarehouseNetWorth, error)
+	CalculateWarehousesValue(userId int) ([]models.WarehouseNetWorth, error)
 }
 
 type Product interface {

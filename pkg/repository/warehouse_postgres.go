@@ -117,19 +117,20 @@ func (r *WarehousePostgres) Update(userId, warehouseId int, input models.UpdateW
 	return err
 }
 
-func (r *WarehousePostgres) CalculateWarehousesValue() ([]models.WarehouseNetWorth, error) {
+func (r *WarehousePostgres) CalculateWarehousesValue(userId int) ([]models.WarehouseNetWorth, error) {
 	var warehouses []models.WarehouseNetWorth
 
 	query := `
 	SELECT 
-		w.name AS warehouse, 
-		COALESCE(SUM(p.price * p.quantity), 0) AS net_worth
+		w.name AS name, 
+		COALESCE(SUM(DISTINCT p.price * p.quantity), 0) AS net_worth	
 	FROM warehouses w
 	LEFT JOIN products p ON w.id = p.warehouse_id
+	WHERE w.user_id = $1
 	GROUP BY w.name;
 `
 
-	err := r.db.Select(&warehouses, query)
+	err := r.db.Select(&warehouses, query, userId)
 	if err != nil {
 		log.Printf("Ошибка выполнения SQL запроса: %v", err)
 		return nil, err

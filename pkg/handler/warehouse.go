@@ -122,11 +122,23 @@ func (h *Handler) deleteWarehouse(c *gin.Context) {
 }
 
 func (h *Handler) getWarehousesValue(c *gin.Context) {
-	warehouseValues, err := h.services.Warehouse.CalculateWarehousesValue()
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, "user not authorized")
+		return
+	}
+
+	warehouseValues, err := h.services.Warehouse.CalculateWarehousesValue(userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "could not calculate warehouses value")
 		return
 	}
+
+	//warehouses, err := h.services.Warehouse.GetAll(userId)
+	//if err != nil {
+	//	newErrorResponse(c, http.StatusInternalServerError, "Не удалось получить склады")
+	//	return
+	//}
 
 	c.JSON(http.StatusOK, warehouseValues)
 }

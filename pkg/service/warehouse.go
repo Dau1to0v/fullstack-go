@@ -36,6 +36,6 @@ func (s *WarehouseService) GetById(userId, warehouseId int) (models.Warehouse, e
 	return s.repo.GetById(userId, warehouseId)
 }
 
-func (s *WarehouseService) CalculateWarehousesValue() ([]models.WarehouseNetWorth, error) {
-	return s.repo.CalculateWarehousesValue()
+func (s *WarehouseService) CalculateWarehousesValue(userId int) ([]models.WarehouseNetWorth, error) {
+	return s.repo.CalculateWarehousesValue(userId)
 }
