@@ -122,13 +122,15 @@ func (r *WarehousePostgres) CalculateWarehousesValue(userId int) ([]models.Wareh
 
 	query := `
 	SELECT 
-		w.name AS name, 
-		COALESCE(SUM(DISTINCT p.price * p.quantity), 0) AS net_worth	
+		w.id AS warehouse_id,
+		w.name AS warehouse_name, 
+		w.location AS warehouse_location,
+		COALESCE(SUM(p.price * p.quantity), 0) AS net_worth
 	FROM warehouses w
 	LEFT JOIN products p ON w.id = p.warehouse_id
 	WHERE w.user_id = $1
-	GROUP BY w.name;
-`
+	GROUP BY w.id, w.name, w.location;
+	`
 
 	err := r.db.Select(&warehouses, query, userId)
 	if err != nil {

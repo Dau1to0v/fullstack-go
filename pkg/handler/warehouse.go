@@ -122,23 +122,29 @@ func (h *Handler) deleteWarehouse(c *gin.Context) {
 }
 
 func (h *Handler) getWarehousesValue(c *gin.Context) {
-	userId, err := getUserId(c)
+	userId, err := getUserId(c) // Получаем ID пользователя
 	if err != nil {
 		newErrorResponse(c, http.StatusUnauthorized, "user not authorized")
 		return
 	}
 
-	warehouseValues, err := h.services.Warehouse.CalculateWarehousesValue(userId)
+	warehouses, err := h.services.Warehouse.CalculateWarehousesValue(userId)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "could not calculate warehouses value")
 		return
 	}
 
-	//warehouses, err := h.services.Warehouse.GetAll(userId)
-	//if err != nil {
-	//	newErrorResponse(c, http.StatusInternalServerError, "Не удалось получить склады")
-	//	return
-	//}
+	var response []map[string]interface{}
+	for _, w := range warehouses {
+		response = append(response, map[string]interface{}{
+			"warehouse": map[string]interface{}{
+				"_id":      w.Id,
+				"name":     w.Warehouse,
+				"location": w.Location,
+			},
+			"netWorth": w.NetWorth,
+		})
+	}
 
-	c.JSON(http.StatusOK, warehouseValues)
+	c.JSON(http.StatusOK, response)
 }
