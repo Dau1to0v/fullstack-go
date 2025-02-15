@@ -185,7 +185,7 @@ func (h *Handler) searchProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, products)
 }
 
-func (h *Handler) getExelFile(c *gin.Context) {
+func (h *Handler) getExcelFile(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
 		newErrorResponse(c, http.StatusUnauthorized, "user not authorized")

@@ -58,7 +58,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 				product.GET("/getAll/:warehouse_id", h.getAllProduct)
 				product.GET("/get/:product_id", h.getProductById)
 				product.GET("/search", h.searchProduct)
-				product.GET("/getExcelFile/:warehouse_id", h.getExelFile)
+				product.GET("/getExcelFile/:warehouse_id", h.getExcelFile)
 				product.POST("/update/:product_id", h.updateProduct)
 				product.POST("/delete/:product_id", h.deleteProduct)
 
