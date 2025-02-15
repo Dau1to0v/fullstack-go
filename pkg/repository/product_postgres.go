@@ -7,6 +7,7 @@ import (
 	"github.com/Dau1to0v/fullstack-go/models"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
+	"log"
 	"strings"
 )
 
@@ -150,4 +151,33 @@ func (r *ProductPostgres) Update(userId, productId int, input models.UpdateProdu
 	}
 
 	return nil
+}
+
+func (r *ProductPostgres) Search(warehouseId int, text, searchType string) ([]models.Product, error) {
+	var products []models.Product
+
+	var query string
+	if searchType == "category" {
+		query = `
+			SELECT id, name, quantity, price, category, user_id, description, warehouse_id, image
+			FROM products
+			WHERE warehouse_id = $1
+			AND (COALESCE($2, '') = '' OR category = $2);
+		`
+	} else {
+		query = `
+			SELECT id, name, quantity, price, category, user_id, description, warehouse_id, image
+			FROM products
+			WHERE warehouse_id = $1
+			AND (COALESCE($2, '') = '' OR name ILIKE '%' || $2 || '%' OR description ILIKE '%' || $2 || '%');
+		`
+	}
+
+	err := r.db.Select(&products, query, warehouseId, text)
+	if err != nil {
+		log.Printf("Ошибка выполнения SQL запроса: %v", err)
+		return nil, err
+	}
+
+	return products, nil
 }

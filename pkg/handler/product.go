@@ -158,3 +158,28 @@ func (h *Handler) deleteProduct(c *gin.Context) {
 		Status: "success",
 	})
 }
+
+func (h *Handler) searchProduct(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, "user not authorized")
+		return
+	}
+
+	warehouseId, err := strconv.Atoi(c.Query("warehouse_id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid warehouse_id")
+		return
+	}
+
+	text := c.Query("text")
+	searchType := c.Query("type") // Может быть "name" или "category"
+
+	products, err := h.services.Product.Search(userId, warehouseId, text, searchType)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, products)
+}

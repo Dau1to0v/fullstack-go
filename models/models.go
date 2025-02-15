@@ -32,6 +32,7 @@ type Product struct {
 	UserId      int         `json:"user_id" db:"user_id"`
 	WarehouseId WarehouseId `json:"warehouse_id" db:"warehouse_id"`
 	CreatedAt   time.Time   `json:"-" db:"created_at"`
+	UpdatedAt   time.Time   `json:"-" db:"updated_at"`
 }
 
 type UpdateWarehouseInput struct {

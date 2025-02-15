@@ -47,3 +47,12 @@ func (s *ProductService) Update(userId, productId int, input models.UpdateProduc
 	}
 	return s.repo.Update(userId, productId, input)
 }
+
+func (s *ProductService) Search(userId, warehouseId int, text, searchType string) ([]models.Product, error) {
+	warehouse, err := s.warehouseRepo.GetById(userId, warehouseId)
+	if err != nil {
+		return nil, errors.New("warehouse not found or access denied")
+	}
+
+	return s.repo.Search(warehouse.Id, text, searchType)
+}
