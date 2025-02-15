@@ -5,6 +5,7 @@ import (
 	"github.com/Dau1to0v/fullstack-go/models"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/xuri/excelize/v2"
 	"log"
 	"net/http"
 	"strconv"
@@ -182,4 +183,72 @@ func (h *Handler) searchProduct(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, products)
+}
+
+func (h *Handler) getExelFile(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusUnauthorized, "user not authorized")
+		return
+	}
+
+	warehouseId, err := strconv.Atoi(c.Param("warehouse_id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid warehouse ID"})
+		return
+	}
+
+	// Получаем товары со склада
+	products, err := h.services.Product.GetAll(userId, warehouseId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get products"})
+		return
+	}
+
+	// Логируем количество полученных товаров
+	logrus.Infof("Получено %d товаров для склада %d", len(products), warehouseId)
+
+	f := excelize.NewFile()
+	sheetName := "Products"
+	f.SetSheetName("Sheet1", sheetName)
+
+	// Устанавливаем активный лист
+	index, err := f.GetSheetIndex(sheetName)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to get sheet index"})
+		return
+	}
+	f.SetActiveSheet(index)
+
+	// Заголовки таблицы
+	headers := []string{"Название", "Количество", "Цена", "Категория"}
+	for i, header := range headers {
+		cell := fmt.Sprintf("%s1", string(rune('A'+i)))
+		f.SetCellValue(sheetName, cell, header)
+	}
+
+	// Записываем данные о продуктах
+	for i, product := range products {
+		row := strconv.Itoa(i + 2) // Начинаем со 2-й строки
+		f.SetCellValue(sheetName, "A"+row, product.Name)
+		f.SetCellValue(sheetName, "B"+row, product.Quantity)
+		f.SetCellValue(sheetName, "C"+row, product.Price)
+		f.SetCellValue(sheetName, "D"+row, product.Category)
+	}
+
+	// Проверяем, записались ли данные
+	logrus.Info("Файл успешно создан, отправляется пользователю")
+
+	// Удаляем пустой стандартный лист
+	f.DeleteSheet("Sheet1")
+
+	// Устанавливаем заголовки для скачивания
+	c.Header("Content-Disposition", "attachment; filename=products.xlsx")
+	c.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	c.Header("Access-Control-Expose-Headers", "Content-Disposition")
+
+	// Записываем файл в HTTP-ответ
+	if err := f.Write(c.Writer); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate file"})
+	}
 }
