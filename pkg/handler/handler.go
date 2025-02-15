@@ -37,7 +37,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			auth.POST("/login", h.signIn)
 			auth.GET("/getMe", h.userIdentity, h.getMe)
 			auth.POST("/updateUser", h.userIdentity, h.updateUser)
-			auth.POST("/passwordChange", h.userIdentity) // TODO: method passwordChange
+			auth.POST("/passwordChange", h.userIdentity, h.passwordChange)
 		}
 
 		protected := api.Group("/", h.userIdentity)

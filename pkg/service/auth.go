@@ -93,6 +93,35 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 func generatePassword(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
+	hashed := fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+	logrus.Info("Хеш пароля:", hashed) // Выведет хеш в логи
+	return hashed
+}
+
+func (s *AuthService) ChangePassword(userId int, input models.PasswordChangeInput) error {
+	// Получаем пользователя по userId
+	user, err := s.repo.GetUserById(userId)
+	if err != nil {
+		return errors.New("user not found")
+	}
+
+	hashedCurrentPassword := generatePassword(input.CurrentPassword)
+
+	// Проверяем, совпадает ли текущий пароль с тем, что в базе
+	if user.Password != hashedCurrentPassword {
+		logrus.Error("Пароли не совпадают: введенный =", hashedCurrentPassword, ", в базе =", user.Password)
+		return errors.New("incorrect current password")
+	}
+
+	// Генерируем новый хеш пароля
+	newHashedPassword := generatePassword(input.NewPassword)
+
+	err = s.repo.UpdatePassword(userId, newHashedPassword)
+	if err != nil {
+		return errors.New("failed to update password")
+	}
+
+	logrus.Info("Пароль успешно изменен для userId =", userId)
+	return nil
 }

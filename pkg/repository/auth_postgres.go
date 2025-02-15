@@ -39,7 +39,7 @@ func (r *AuthPostgres) GetUser(username, password string) (models.User, error) {
 
 func (r *AuthPostgres) GetUserById(userId int) (models.User, error) {
 	var user models.User
-	query := "SELECT id, username, email FROM users WHERE id = $1"
+	query := "SELECT id, username, email, password_hash FROM users WHERE id = $1"
 
 	err := r.db.Get(&user, query, userId)
 	if err != nil {
@@ -76,5 +76,12 @@ func (r *AuthPostgres) UpdateUser(userId int, input models.UpdateUserInput) erro
 	args = append(args, userId) // Добавляем userId в аргументы
 
 	_, err := r.db.Exec(query, args...)
+	return err
+}
+
+func (r *AuthPostgres) UpdatePassword(userId int, newPassword string) error {
+	query := `UPDATE users SET password_hash = $1 WHERE id = $2`
+
+	_, err := r.db.Exec(query, newPassword, userId)
 	return err
 }

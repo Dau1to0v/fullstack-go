@@ -10,6 +10,7 @@ type Authorization interface {
 	GetUser(username, password string) (models.User, error)
 	GetUserById(id int) (models.User, error)
 	UpdateUser(userId int, input models.UpdateUserInput) error
+	UpdatePassword(userId int, newPassword string) error
 }
 
 type Warehouse interface {

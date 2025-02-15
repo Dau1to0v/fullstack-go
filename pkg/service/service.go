@@ -11,6 +11,7 @@ type Authorization interface {
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
 	UpdateUser(userId int, input models.UpdateUserInput) error
+	ChangePassword(userId int, input models.PasswordChangeInput) error
 }
 
 type Warehouse interface {

@@ -7,9 +7,9 @@ import (
 
 type User struct {
 	Id        int       `json:"_id" db:"id"`
-	Username  string    `json:"username" binding:"required"`
-	Email     string    `json:"email" binding:"required,email"`
-	Password  string    `json:"password" binding:"required"`
+	Username  string    `json:"username" db:"username" binding:"required"`
+	Email     string    `json:"email" db:"email" binding:"required,email"`
+	Password  string    `json:"password" db:"password_hash" binding:"required"`
 	CreatedAt time.Time `json:"-" db:"created_at"`
 }
 
@@ -84,4 +84,9 @@ type WarehouseNetWorth struct {
 	Location  string  `json:"location" db:"warehouse_location"`
 	Warehouse string  `json:"warehouse" db:"warehouse_name"`
 	NetWorth  float64 `json:"netWorth" db:"net_worth"`
+}
+
+type PasswordChangeInput struct {
+	CurrentPassword string `json:"currentPassword" binding:"required"`
+	NewPassword     string `json:"newPassword" binding:"required"`
 }
