@@ -56,8 +56,6 @@ func (h *Handler) getAllWarehouse(c *gin.Context) {
 	c.JSON(http.StatusOK, warehouses)
 }
 
-func (h *Handler) getWarehouseById(c *gin.Context) {}
-
 func (h *Handler) updateWarehouse(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
